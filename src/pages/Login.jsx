@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { fbaseauth, signInWithEmailAndPassword } from '../fbase';
 
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [sign, setSign] = useState(false);
-  const [err, setErr] = useState(false);
+  const [err, setErr] = useState('');
 
   const signInBtn = document.getElementById("signIn");
   const signUpBtn = document.getElementById("signUp");
@@ -16,10 +16,11 @@ const Login = () => {
     e.preventDefault();
     
     try {
-      await signInWithEmailAndPassword(email, password);
-      console.log("로그인 성공!");
+      await signInWithEmailAndPassword(fbaseauth, email, password);
+      // 로그인 성공
+
     } catch (error) {
-      console.error("로그인 실패: ", error.message);
+      setErr('입력하신 이메일 또는 비밀번호가 일치하지 않습니다')
     }
   };
 
@@ -35,6 +36,7 @@ const Login = () => {
     setSign(!sign);
     setEmail('');
     setPassword('');
+    setErr('');
   }
 
   return (
@@ -54,6 +56,7 @@ const Login = () => {
           <h2 className="form__title">Sign In</h2>
           <input type="email" placeholder="Email" className="input" value={email} onChange={OnchangeinputID} />
           <input type="password" placeholder="Password" className="input" value={password} onChange={OnchangeinputPW} />
+          <div className="errorcode">{err}</div>
           <a href="#" className="link">Forgot your password?</a>
           <button className="btn">Sign In</button>
         </form>
