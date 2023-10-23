@@ -17,7 +17,7 @@ const Login = () => {
     
     try {
       await signInWithEmailAndPassword(fbaseauth, email, password);
-      // 로그인 성공
+      console.log("로그인성공")
 
     } catch (error) {
       setErr('입력하신 이메일 또는 비밀번호가 일치하지 않습니다')

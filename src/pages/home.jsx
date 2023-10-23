@@ -1,9 +1,11 @@
 import React from 'react';
 
-const home = () => {
+const home = ({isLoggedIn, userObj}) => {
+    console.log(userObj)
     return (
         <div>
             home
+
         </div>
     );
 };
