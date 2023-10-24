@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { fbaseauth, signInWithEmailAndPassword } from '../fbase';
+import { fbaseauth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../fbase';
 
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [sign, setSign] = useState(false);
   const [err, setErr] = useState('');
+  const [isEmailSent, setIsEmailSent] = useState(false);
 
   const signInBtn = document.getElementById("signIn");
   const signUpBtn = document.getElementById("signUp");
@@ -17,12 +19,39 @@ const Login = () => {
     
     try {
       await signInWithEmailAndPassword(fbaseauth, email, password);
-      console.log("로그인성공")
-
+      
     } catch (error) {
       setErr('입력하신 이메일 또는 비밀번호가 일치하지 않습니다')
     }
   };
+
+  const SubmitSignup = async (e) => {
+    e.preventDefault();
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(fbaseauth, email, password);
+      const user = userCredential.user;
+
+      await user.updateProfile({
+        displayName: name,
+      });
+    } catch (error) {
+      setErr('회원 가입 중 오류가 있습니다.')
+    }
+  }
+
+  const Clicksearchpw = async (e) => {
+    try {
+      await fbaseauth.sendPasswordResetEmail(email); // Firebase 비밀번호 재설정 이메일 보내기
+      setIsEmailSent(true);
+    } catch (error) {
+      console.error('비밀번호 재설정 이메일 보내기 중 오류가 발생했습니다.', error);
+    }
+  }
+
+  const OnchangeinputNAME = (e) => {
+    setName(e.target.value);
+  }
 
   const OnchangeinputID = (e) => {
     setEmail(e.target.value);
@@ -42,11 +71,12 @@ const Login = () => {
   return (
     <div className={`container ${sign ? 'right-panel-active' : ''}`}>
       <div className="container__form container--signup">
-        <form action="#" className="form" id="form1">
+        <form action="#" className="form" id="form1" onSubmit={SubmitSignup}>
           <h2 className="form__title">Sign Up</h2>
-          <input type="text" placeholder="User" className="input" />
+          <input type="text" placeholder="User" className="input" value={name} onChange={OnchangeinputNAME} />
           <input type="email" placeholder="Email" className="input" value={email} onChange={OnchangeinputID} />
           <input type="password" placeholder="Password" className="input" value={password} onChange={OnchangeinputPW} />
+          <div className="errorcode">{err}</div>
           <button className="btn">Sign Up</button>
         </form>
       </div>
@@ -57,7 +87,7 @@ const Login = () => {
           <input type="email" placeholder="Email" className="input" value={email} onChange={OnchangeinputID} />
           <input type="password" placeholder="Password" className="input" value={password} onChange={OnchangeinputPW} />
           <div className="errorcode">{err}</div>
-          <a href="#" className="link">Forgot your password?</a>
+          <a href="#" className="link" onClick={Clicksearchpw}>Forgot your password?</a>
           <button className="btn">Sign In</button>
         </form>
       </div>
