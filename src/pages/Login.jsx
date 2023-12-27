@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { fbaseauth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../fbase';
+import GithubButton from '../components/githubbtn';
+import { sendPasswordResetEmail } from 'firebase/auth';
 
 
 const Login = () => {
@@ -42,7 +44,7 @@ const Login = () => {
 
   const Clicksearchpw = async (e) => {
     try {
-      await fbaseauth.sendPasswordResetEmail(email); // Firebase 비밀번호 재설정 이메일 보내기
+      await sendPasswordResetEmail(fbaseauth, email); // Firebase 비밀번호 재설정 이메일 보내기
       setIsEmailSent(true);
     } catch (error) {
       console.error('비밀번호 재설정 이메일 보내기 중 오류가 발생했습니다.', error);
@@ -77,6 +79,7 @@ const Login = () => {
           <input type="email" placeholder="Email" className="input" value={email} onChange={OnchangeinputID} />
           <input type="password" placeholder="Password" className="input" value={password} onChange={OnchangeinputPW} />
           <div className="errorcode">{err}</div>
+          <GithubButton />
           <button className="btn">Sign Up</button>
         </form>
       </div>
@@ -88,6 +91,7 @@ const Login = () => {
           <input type="password" placeholder="Password" className="input" value={password} onChange={OnchangeinputPW} />
           <div className="errorcode">{err}</div>
           <a href="#" className="link" onClick={Clicksearchpw}>Forgot your password?</a>
+          <GithubButton />
           <button className="btn">Sign In</button>
         </form>
       </div>
