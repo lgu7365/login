@@ -24,16 +24,11 @@ const Home = ({isLoggedIn, userObj}) => {
   };
 
   return (
-    <div className="container">
+    <div className="containerh">
       <div className="inbox">
         <aside>
           <ul>
-            {chats.map((chat) => (
-              <li key={chat.id} onClick={() => handleChatClick(chat.id)}>
-                <img className="avatar" src={chat.avatar} alt="User Avatar" />
-                <p className="username">{chat.username}</p>
-              </li>
-            ))}
+            
           </ul>
         </aside>
 
