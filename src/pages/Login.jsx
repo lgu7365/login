@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { fbaseauth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '../fbase';
+import { fbaseauth, signInWithEmailAndPassword, createUserWithEmailAndPassword, storage } from '../fbase';
 import GithubButton from '../components/githubbtn';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
@@ -10,6 +10,7 @@ const Login = () => {
   const [name, setName] = useState('');
   const [sign, setSign] = useState(false);
   const [err, setErr] = useState('');
+  const [file, setFile] = useState(null);
   const [isEmailSent, setIsEmailSent] = useState(false);
 
   const signInBtn = document.getElementById("signIn");
@@ -29,14 +30,23 @@ const Login = () => {
 
   const SubmitSignup = async (e) => {
     e.preventDefault();
-
     try {
       const userCredential = await createUserWithEmailAndPassword(fbaseauth, email, password);
       const user = userCredential.user;
-
+      /*
       await user.updateProfile({
         displayName: name,
       });
+      */
+      if(file) {
+        //
+        const storageRef = storage.refref(`profile_images/${user.uid}/${file.name}`);;
+        await storageRef.put(file);
+        const downloadUrl = await storageRef.getDownloadURL();
+
+        console.log('Profile image uploaded:', downloadUrl);
+      }
+      debugger;
     } catch (error) {
       setErr('회원 가입 중 오류가 있습니다.')
     }
@@ -70,6 +80,13 @@ const Login = () => {
     setErr('');
   }
 
+  const onFileChange = (e) => {
+    const { files } = e.target;
+    if(files && files.length === 1){
+      setFile(files[0]);
+    }
+  }
+
   return (
     <div className={`container ${sign ? 'right-panel-active' : ''}`}>
       <div className="container__form container--signup">
@@ -79,6 +96,8 @@ const Login = () => {
           <input type="email" placeholder="Email" className="input" value={email} onChange={OnchangeinputID} />
           <input type="password" placeholder="Password" className="input" value={password} onChange={OnchangeinputPW} />
           <div className="errorcode">{err}</div>
+          <label htmlFor="file">{file ? "Photo added ✅":"Add photo"}</label>
+          <input onChange={onFileChange} type="file" id="file" accept="image/" />
           <GithubButton />
           <button className="btn">Sign Up</button>
         </form>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { fbaseauth } from '../fbase';
 
 const Home = ({isLoggedIn, userObj}) => {
-  const [chats, setChats] = useState();
+  const [chats, setChats] = useState([]);
   //const [selectedChat, setSelectedChat] = useState(null);
   //const [text, setText] = useState('');
   
@@ -47,6 +47,7 @@ const Home = ({isLoggedIn, userObj}) => {
           </footer>
         </main>
       </div>
+      <button onClick={handleLogout}>LogOut</button>
     </div>
   );
 };
