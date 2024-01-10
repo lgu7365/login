@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { fbaseauth, signInWithEmailAndPassword, createUserWithEmailAndPassword, storage } from '../fbase';
 import GithubButton from '../components/githubbtn';
 import { sendPasswordResetEmail } from 'firebase/auth';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 
 const Login = () => {
@@ -39,14 +40,12 @@ const Login = () => {
       });
       */
       if(file) {
-        //
-        const storageRef = storage.refref(`profile_images/${user.uid}/${file.name}`);;
-        await storageRef.put(file);
-        const downloadUrl = await storageRef.getDownloadURL();
+        const storageRef = ref(storage, `profile_images/${user.uid}/${file.name}`);;
+        const result = await uploadBytes(storageRef, file);
+        const downloadUrl = await getDownloadURL(result.ref);
 
         console.log('Profile image uploaded:', downloadUrl);
       }
-      debugger;
     } catch (error) {
       setErr('회원 가입 중 오류가 있습니다.')
     }
