@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { fbaseauth, signInWithEmailAndPassword, createUserWithEmailAndPassword, storage } from '../fbase';
+import { fbaseauth, signInWithEmailAndPassword, createUserWithEmailAndPassword, storage, db } from '../fbase';
 import GithubButton from '../components/githubbtn';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { addDoc, collection } from 'firebase/firestore';
 
 
 const Login = () => {
@@ -34,6 +35,7 @@ const Login = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(fbaseauth, email, password);
       const user = userCredential.user;
+      let downloadUrl;
       /*
       await user.updateProfile({
         displayName: name,
@@ -42,10 +44,17 @@ const Login = () => {
       if(file) {
         const storageRef = ref(storage, `profile_images/${user.uid}/${file.name}`);;
         const result = await uploadBytes(storageRef, file);
-        const downloadUrl = await getDownloadURL(result.ref);
+        downloadUrl = await getDownloadURL(result.ref);
 
         console.log('Profile image uploaded:', downloadUrl);
       }
+
+      const doc = await addDoc(collection(db, "users"), {
+        profile: downloadUrl,
+        joinDt: Date.now(),
+        username: user.displayName || "Anonymous",
+        userId: user.uid
+      });
     } catch (error) {
       setErr('회원 가입 중 오류가 있습니다.')
     }
